@@ -3,11 +3,18 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
-    <property name="jdbcUrl" value="jdbc:h2:mem:activiti;DB_CLOSE_DELAY=1000" />
-    <property name="jdbcDriver" value="org.h2.Driver" />
-    <property name="jdbcUsername" value="sa" />
-    <property name="jdbcPassword" value="" />
-  </bean>
+    <bean id="noRetryFailedJobCommandFactory" class="org.activiti.NoRetryFailedJobCommandFactory"/>
+
+    <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
+        <property name="jdbcUrl" value="jdbc:h2:mem:activiti;DB_CLOSE_DELAY=1000" />
+        <property name="jdbcDriver" value="org.h2.Driver" />
+        <property name="jdbcUsername" value="sa" />
+        <property name="jdbcPassword" value="" />
+        <property name="failedJobCommandFactory" ref="noRetryFailedJobCommandFactory"/>
+        <property name="asyncExecutorActivate" value="true"/>
+        <property name="asyncExecutorEnabled" value="true"/>
+        <property name="jobExecutorActivate" value="true"/>
+        <property name="lockTimeAsyncJobWaitTime" value="1000"/>
+    </bean>
 
 </beans>

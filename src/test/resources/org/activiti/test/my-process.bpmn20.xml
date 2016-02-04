@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn"
-	xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
-	xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
-	expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-
-	<process id="my-process">
-
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+	<process id="internal_process" isExecutable="true">
 		<startEvent id="start" />
-		<sequenceFlow id="flow1" sourceRef="start" targetRef="someTask" />
-		
-		<userTask id="someTask" name="Activiti is awesome!" />
-		<sequenceFlow id="flow2" sourceRef="someTask" targetRef="end" />
-
+		<scriptTask id="proc1_script1" name="proc1_script1" scriptFormat="groovy">
+			<script>
+				import org.activiti.engine.delegate.BpmnError;
+				import org.activiti.engine.ActivitiException;
+				try {
+					def var = null;
+					var.prop;
+				}
+				catch(Exception ex) {
+					throw ex;
+				}
+			</script>
+		</scriptTask>
 		<endEvent id="end" />
-
+		<sequenceFlow sourceRef="start" targetRef="proc1_script1" />
+		<sequenceFlow sourceRef="proc1_script1" targetRef="end" />
 	</process>
-
+	<process id="my-process" isExecutable="true">
+		<boundaryEvent id="customErrorEvent" attachedToRef="proc0_callActivity1" cancelActivity="true">
+			<errorEventDefinition errorRef="customError"/>
+		</boundaryEvent>
+		<startEvent id="start2" />
+		<callActivity id="proc0_callActivity1" name="proc0_callActivity1" calledElement="internal_process" activiti:async="true">
+			<extensionElements>
+				<activiti:mapException errorCode="customError"/>
+			</extensionElements>
+		</callActivity>
+		<endEvent id="end2" />
+		<sequenceFlow sourceRef="start2" targetRef="proc0_callActivity1" />
+		<sequenceFlow sourceRef="proc0_callActivity1" targetRef="end2" />
+	</process>
+	<bpmndi:BPMNDiagram id="BPMNDiagram_internal_process">
+		<bpmndi:BPMNPlane bpmnElement="internal_process" id="BPMNPlane_internal_process" />
+	</bpmndi:BPMNDiagram>
 </definitions>
